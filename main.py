@@ -17,7 +17,7 @@ def is_torrent_content(content):
 
 
 @bot.message_handler(content_types=['document'])
-def handle_docs_audio(message):
+def handle_docs_torrent(message):
     if message.from_user.id not in ADMIN_IDS:
         # print("ID: {} is not admin ID".format(message.from_user.id))
         bot.send_message(message.chat.id, "Your ID {} is not allowed this action".format(message.from_user.id))
@@ -25,7 +25,6 @@ def handle_docs_audio(message):
 
     # print(message)
     # print(message.document)
-
     file_info = bot.get_file(message.document.file_id)
     # print(file_info)
     file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(API_KEY, file_info.file_path))
@@ -33,6 +32,9 @@ def handle_docs_audio(message):
     if file and torrent_name:
         with open('{}{}.torrent'.format(TORRENT_FOLDER, torrent_name), 'wb') as f:
             f.write(file.content)
+        bot.send_message(message.chat.id, "Successful action.")
+    else:
+        bot.send_message(message.chat.id, "Wrong file.")
 
 
 bot.polling(none_stop=True)
